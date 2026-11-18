@@ -1,0 +1,25 @@
+[build]
+  command = "npm run build"
+  publish = "web/dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+[[plugins]]
+  package = "/plugins/nativescript-edge"
+
+# The web app's own routes. Everything else that isn't a static file reaches the server (/api/*, /n/*).
+[[redirects]]
+  from = "/notes/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/map"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/index.html"
+  status = 200

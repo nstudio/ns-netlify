@@ -1,0 +1,35 @@
+{
+  "name": "ns-netlify-field-notes",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "vite build --config web/vite.config.ts",
+    "typecheck": "tsc -p web/tsconfig.json && tsc -p netlify/server/tsconfig.json",
+    "native": "node scripts/native.mjs"
+  },
+  "dependencies": {
+    "@netlify/blobs": "11.1.9",
+    "@netlify/database": "2.0.3",
+    "@netlify/server": "0.1.6",
+    "hono": "4.13.19",
+    "pg": "8.23.1",
+    "qrcode": "1.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.11",
+    "@vitejs/plugin-react": "6.3.0",
+    "maplibre-gl": "6.19.0",
+    "react": "19.1.10",
+    "react-dom": "19.1.10",
+    "typescript": "~6.0.0",
+    "vite": "8.3.8"
+  }
+}

@@ -1,0 +1,16 @@
+name: nativescript-edge
+inputs:
+  - name: nativeDir
+    description: The NativeScript Edge project (its app/ and root project files).
+    default: native
+  - name: template
+    description: The edge template the project is created from.
+    default: react
+  - name: badgeContexts
+    description: Deploy contexts whose pages get the "Open on your phone" button.
+    default: [deploy-preview, branch-deploy]
+  - name: editorLink
+    description: >-
+      Put the edge project's editor link, which carries its write key, in the deploy summary.
+      Leave it off when deploy logs are public.
+    default: false

@@ -1,0 +1,8 @@
+node_modules/
+platforms/
+hooks/
+.ns-vite-build/
+# Holds this project's keys.
+.ns-edge.json
+*.log
+.DS_Store
