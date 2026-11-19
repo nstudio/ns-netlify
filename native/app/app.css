@@ -19,6 +19,7 @@ Page { background-color: #0d1117; }
 .header-sub { font-size: 14; color: #9aa4b2; margin-top: 2; }
 .brand-dot { width: 8; height: 8; border-radius: 4; background-color: #05bdba; margin-right: 8; }
 .brand { font-size: 12; font-weight: bold; letter-spacing: 0.14; color: #f4f7fb; }
+.deploy-pill { font-size: 10; font-weight: bold; letter-spacing: 0.08; color: #0d1117; background-color: #32e6e2; border-radius: 8; padding: 2 8; margin-left: 10; }
 .live-pill { border-radius: 999; padding: 4 10; background-color: #1a2230; margin-right: 10; }
 .live-dot { width: 7; height: 7; border-radius: 4; background-color: #5b6370; margin-right: 6; }
 .live-dot.on { background-color: #32e6e2; }

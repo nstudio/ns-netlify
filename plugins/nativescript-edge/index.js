@@ -7,9 +7,9 @@
  * in place when the branch is pushed again. The projects' keys live in a
  * Netlify Blobs store of the site.
  */
-import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { parseEnv } from 'node:util';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { getStore } from '@netlify/blobs';
 import QRCode from 'qrcode';
 import { badgeSnippet } from './badge.js';
@@ -24,7 +24,7 @@ export const onPostBuild = async ({ constants, inputs, utils }) => {
   const server = (env.NS_EDGE_SERVER ?? DEFAULT_SERVER).replace(/\/$/, '');
   if (!apiBase) return utils.build.failPlugin('nativescript-edge: no deploy URL in the build environment (URL / DEPLOY_PRIME_URL).');
 
-  const store = projectStore(constants);
+  const store = await projectStore(constants, utils);
   const key = context === 'production' ? 'production' : `branch/${branch}`;
 
   try {
@@ -86,17 +86,28 @@ async function createToken(env) {
   return env.NS_EDGE_CREATE_TOKEN;
 }
 
-/** Edge project keys by deploy key, in the site's Blobs; a local build without Netlify credentials keeps them in a file. */
-function projectStore(constants) {
-  if (constants.SITE_ID && constants.NETLIFY_API_TOKEN) {
-    const blobs = getStore({ name: 'nativescript-edge', siteID: constants.SITE_ID, token: constants.NETLIFY_API_TOKEN, consistency: 'strong' });
-    return { get: (k) => blobs.get(k, { type: 'json' }), set: (k, v) => blobs.setJSON(k, v) };
-  }
-  const file = join(process.cwd(), '.netlify', 'nativescript-edge.json');
+/**
+ * Edge project keys by deploy key. Builds keep them in the build cache, which
+ * every build of the site restores; the site's Blobs store also holds them
+ * when the build may write it (CLI deploys), and is read first. Git builds
+ * may only write deploy-scoped stores.
+ */
+async function projectStore(constants, utils) {
+  const file = join(process.cwd(), '.netlify', 'nativescript-edge', 'projects.json');
+  await utils.cache.restore(file).catch(() => {});
+  const blobs =
+    constants.SITE_ID && constants.NETLIFY_API_TOKEN
+      ? getStore({ name: 'nativescript-edge', siteID: constants.SITE_ID, token: constants.NETLIFY_API_TOKEN, consistency: 'strong' })
+      : null;
   const read = async () => JSON.parse(await readFile(file, 'utf8').catch(() => '{}'));
   return {
-    get: async (k) => (await read())[k] ?? null,
-    set: async (k, v) => writeFile(file, JSON.stringify({ ...(await read()), [k]: v }, null, 2)),
+    get: async (k) => (blobs ? await blobs.get(k, { type: 'json' }).catch(() => null) : null) ?? (await read())[k] ?? null,
+    set: async (k, v) => {
+      await mkdir(dirname(file), { recursive: true });
+      await writeFile(file, JSON.stringify({ ...(await read()), [k]: v }, null, 2));
+      await utils.cache.save(file).catch(() => {});
+      await blobs?.setJSON(k, v).catch(() => {});
+    },
   };
 }
 
