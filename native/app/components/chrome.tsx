@@ -2,8 +2,19 @@ import type { ReactNode } from 'react';
 import { Icon } from './ui';
 import { systemBars } from '../platform/insets';
 import type { IconName } from '../platform/icons';
+import { DEPLOY } from '../config';
 
 export type Tab = 'notes' | 'capture' | 'map';
+
+/** Which backend a phone is on, shown on everything but production: a preview's data is its own database branch. */
+function deployLabel(): string | null {
+  const { context } = DEPLOY;
+  const branch = (DEPLOY as { branch?: string }).branch;
+  if (context === 'production') return null;
+  if (context === 'deploy-preview') return branch ? `PREVIEW · ${branch.toUpperCase()}` : 'PREVIEW';
+  if (context === 'branch-deploy') return branch ? branch.toUpperCase() : 'BRANCH';
+  return 'DEV';
+}
 
 export function Header({ title, sub, right, children }: { title: string; sub?: string; right?: ReactNode; children?: ReactNode }) {
   return (
@@ -11,6 +22,7 @@ export function Header({ title, sub, right, children }: { title: string; sub?: s
       <gridlayout columns="auto, auto, *, auto" height={34}>
         <stacklayout className="brand-dot" verticalAlignment="middle" />
         <label col={1} text="FIELD NOTES" className="brand" verticalAlignment="middle" />
+        {deployLabel() ? <label col={2} text={deployLabel()!} className="deploy-pill" horizontalAlignment="left" verticalAlignment="middle" /> : null}
         <stacklayout col={3} orientation="horizontal" verticalAlignment="middle">
           {right}
         </stacklayout>
