@@ -35,6 +35,8 @@ scripts/native.mjs          sync native/app (and shared/) to a NativeScript Edge
 
 Scanning the code opens the app in NativeScript Preview from the App Store or Google Play. Push another commit and phones that scanned it update in place.
 
+Each deploy preview has its own Netlify Server and its own database branch, and its phone app talks to them, so testing a pull request on a phone never touches production data. Outside production the phone app's header says which deploy it runs (`PREVIEW · <branch>`). The edge projects' keys are kept in the site's build cache (and in the site's Blobs store when a CLI deploy may write it), so a branch keeps its project, and phones keep their pairing, from one deploy to the next.
+
 ## Develop
 
 ```sh
