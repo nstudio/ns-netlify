@@ -18,7 +18,8 @@ import { collect, configModule, createProject, DEFAULT_SERVER, deviceLink, edito
 export const onPostBuild = async ({ constants, inputs, utils }) => {
   const env = process.env;
   const context = env.CONTEXT ?? 'dev';
-  const branch = env.BRANCH ?? env.HEAD ?? 'local';
+  // A pull request builds BRANCH `pull/<n>/head`; HEAD is the branch's own name.
+  const branch = env.HEAD ?? env.BRANCH ?? 'local';
   const commit = env.COMMIT_REF ?? '';
   const apiBase = (context === 'production' ? env.URL : env.DEPLOY_PRIME_URL) ?? env.URL;
   const server = (env.NS_EDGE_SERVER ?? DEFAULT_SERVER).replace(/\/$/, '');
